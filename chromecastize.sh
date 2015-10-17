@@ -126,7 +126,7 @@ process_file() {
 	fi
 
 	# test general format
-        INPUT_GFORMAT=`mediainfo --Inform="General;%Format%\n" "$FILENAME" | head -n1`
+        INPUT_GFORMAT=`/usr/local/mediainfo/bin/mediainfo --Inform="General;%Format%\n" "$FILENAME" | head -n1`
         if is_supported_gformat "$INPUT_GFORMAT" && [ "$OVERRIDE_GFORMAT" = "" ] || [ "$OVERRIDE_GFORMAT" = "$EXTENSION" ]; then
                 OUTPUT_GFORMAT="ok"
         else
@@ -136,7 +136,7 @@ process_file() {
         echo "- general: $INPUT_GFORMAT -> $OUTPUT_GFORMAT"
 
         # test video codec
-        INPUT_VCODEC=`mediainfo --Inform="Video;%Format%\n" "$FILENAME" | head -n1`
+        INPUT_VCODEC=`/usr/local/mediainfo/bin/mediainfo --Inform="Video;%Format%\n" "$FILENAME" | head -n1`
         if is_supported_vcodec "$INPUT_VCODEC"; then
                 OUTPUT_VCODEC="copy"
         else
@@ -145,7 +145,7 @@ process_file() {
         echo "- video: $INPUT_VCODEC -> $OUTPUT_VCODEC"
 
         # test audio codec
-        INPUT_ACODEC=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" | head -n1`
+        INPUT_ACODEC=`/usr/local/mediainfo/bin/mediainfo --Inform="Audio;%Format%\n" "$FILENAME" | head -n1`
         if is_supported_acodec "$INPUT_ACODEC"; then
                 OUTPUT_ACODEC="copy"
         else
@@ -157,7 +157,7 @@ process_file() {
                 echo "- file should be playable by Chromecast!"
 		mark_as_good "$FILENAME"
 	else
-		echo "- video length: `mediainfo --Inform="General;%Duration/String3%" "$FILENAME"`"
+		echo "- video length: `/usr/local/mediainfo/bin/mediainfo --Inform="General;%Duration/String3%" "$FILENAME"`"
 		$FFMPEG -loglevel error -stats -i "$FILENAME" -map 0 -scodec copy -vcodec "$OUTPUT_VCODEC" -acodec "$OUTPUT_ACODEC" "$FILENAME.$OUTPUT_GFORMAT" && on_success "$FILENAME" || on_failure "$FILENAME"
 		echo ""
         fi
@@ -168,9 +168,9 @@ process_file() {
 ################
 
 # test if `mediainfo` is available
-MEDIAINFO=`which mediainfo`
+MEDIAINFO=`which /usr/local/mediainfo/bin/mediainfo`
 if [ -z $MEDIAINFO ]; then
-	echo '`mediainfo` is not available, please install it'
+	echo '`/usr/local/mediainfo/bin/mediainfo` is not available, please install it'
 	exit 1
 fi
 
